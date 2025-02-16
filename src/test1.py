@@ -9,6 +9,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 from nltk.corpus import stopwords
 import pandas as pd
+
 # Télécharger les stop words français
 import nltk
 nltk.download('stopwords')

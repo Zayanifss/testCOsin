@@ -1,17 +1,19 @@
-# Image de base Python
-FROM python:3.9-slim
+# Use Python slim image
+FROM python:3.9-slim AS builder
 
-# Définir le répertoire de travail
 WORKDIR /app
 
-# Copier les fichiers nécessaires
 COPY requirements.txt .
+RUN pip install --user -r requirements.txt
 
-COPY test1.py .  
+# Ensure group and user creation is safe
+RUN getent group appgroup || groupadd -r appgroup && \
+ id -u appuser &>/dev/null || useradd -r -g appgroup -u 1001 appuser
 
-# Installer les dépendances
-RUN pip install --no-cache-dir -r requirements.txt && \
-    python -m nltk.downloader stopwords  # Télécharger les stopwords NLTK
+# Switch to the non-root user
+USER appuser
 
-# Commande d'exécution
-CMD ["python", "./test1.py"]
+COPY src/ ./src
+
+# Ensure CMD uses JSON format to prevent OS signal issues
+CMD ["python", "src/test1.py"]  
